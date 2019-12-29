@@ -1,4 +1,4 @@
-FROM ubuntu:12.04
+FROM amd64/ubuntu:16.04
 SHELL ["/bin/bash", "-i", "-c"]
 
 ARG PYTHON_VERSION=3.7.5
@@ -19,12 +19,22 @@ RUN \
         build-essential \
         ca-certificates \
         curl \
+        wget \
         git \
+        llvm \
+        xz-utils \
+        tk-dev \
+        libffi-dev \
+        liblzma-dev \
         libbz2-dev \
+        libncurses5-dev \
         libreadline-dev \
         libsqlite3-dev \
         libssl-dev \
         zlib1g-dev \
+        #staticx
+        binutils \
+        patchelf \
     # install pyenv
     && echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc \
     && echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc \
@@ -33,11 +43,14 @@ RUN \
     && echo 'eval "$(pyenv init -)"' >> ~/.bashrc \
     && source ~/.bashrc \
     # install python
+    && export CFLAGS='-O2' \ 
     && PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install $PYTHON_VERSION \
     && pyenv global $PYTHON_VERSION \
     && pip install --upgrade pip \
     # install pyinstaller
     && pip install pyinstaller==$PYINSTALLER_VERSION \
+    #staticx
+    && pip install staticx \
     && mkdir /src/ \
     && chmod +x /entrypoint.sh
 
