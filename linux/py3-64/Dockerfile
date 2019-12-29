@@ -32,9 +32,14 @@ RUN \
         libsqlite3-dev \
         libssl-dev \
         zlib1g-dev \
+	#upx
+	upx \
         #staticx
         binutils \
         patchelf \
+        scons \
+        musl-dev \
+        musl \
     # install pyenv
     && echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc \
     && echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc \
@@ -50,7 +55,7 @@ RUN \
     # install pyinstaller
     && pip install pyinstaller==$PYINSTALLER_VERSION \
     #staticx
-    && pip install staticx \
+    && pip3 install https://github.com/JonathonReinhart/staticx/archive/master.zip \
     && mkdir /src/ \
     && chmod +x /entrypoint.sh
 
