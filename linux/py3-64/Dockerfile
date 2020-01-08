@@ -1,4 +1,4 @@
-FROM amd64/ubuntu:16.04
+FROM amd64/ubuntu:14.04
 SHELL ["/bin/bash", "-i", "-c"]
 
 ARG PYTHON_VERSION=3.7.5
@@ -45,6 +45,16 @@ RUN \
         scons \
         musl-dev \
         musl \
+    #install openssl
+    # compile openssl lib required for python 3.7
+    && mkdir openssl \
+    && cd openssl \
+    && wget https://www.openssl.org/source/openssl-1.0.2u.tar.gz \
+    && tar -xzvf openssl-1.0.2u.tar.gz \
+    && cd openssl-1.0.2u \
+    && ./config --prefix=$HOME/openssl --openssldir=$HOME/openssl shared zlib \
+    && make \
+    && make install \
     # install pyenv
     && echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc \
     && echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc \
@@ -53,8 +63,7 @@ RUN \
     && echo 'eval "$(pyenv init -)"' >> ~/.bashrc \
     && source ~/.bashrc \
     # install python
-    && export CFLAGS='-O2' \ 
-    && PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install $PYTHON_VERSION \
+    && PATH="$HOME/openssl:$PATH"  CPPFLAGS="-O2 -I$HOME/openssl/include" CFLAGS="-O2 -I$HOME/openssl/include/" LDFLAGS="-L$HOME/openssl/lib -Wl,-rpath,$HOME/openssl/lib" LD_LIBRARY_PATH=$HOME/openssl/lib:$LD_LIBRARY_PATH LD_RUN_PATH="$HOME/openssl/lib" CONFIGURE_OPTS="--with-openssl=$HOME/openssl" PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install --verbose $PYTHON_VERSION \
     && pyenv global $PYTHON_VERSION \
     && pip install --upgrade pip \
     # install pyinstaller
