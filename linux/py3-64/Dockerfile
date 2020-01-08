@@ -32,6 +32,11 @@ RUN \
         libsqlite3-dev \
         libssl-dev \
         zlib1g-dev \
+        #optional modules
+	libgdbm-dev \
+        libgdbm3 \
+        uuid-dev \
+        libdb5.3-dev \
 	#upx
 	upx \
         #staticx
