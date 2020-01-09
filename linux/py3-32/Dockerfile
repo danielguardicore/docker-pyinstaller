@@ -23,7 +23,9 @@ RUN \
         git \
         llvm \
         xz-utils \
+        g++-multilib \
         tk-dev \
+        libc6-dev \
         libffi-dev \
         liblzma-dev \
         libbz2-dev \
@@ -37,6 +39,8 @@ RUN \
         libgdbm3 \
         uuid-dev \
         libdb5.3-dev \
+        #openssl
+        libx32gcc-4.8-dev \
         # upx
         upx \
     # install openssl
@@ -45,7 +49,8 @@ RUN \
     && wget https://www.openssl.org/source/openssl-1.0.2u.tar.gz \
     && tar -xzvf openssl-1.0.2u.tar.gz \
     && cd openssl-1.0.2u \
-    && ./config --prefix=$HOME/openssl --openssldir=$HOME/openssl shared zlib \
+    # we use ./Configure to explictly state the arch because ./config guesses wrongly because we're in a container
+    && ./Configure linux-generic32 --prefix=$HOME/openssl --openssldir=$HOME/openssl shared zlib \
     && make \
     && make install \
     # install pyenv
